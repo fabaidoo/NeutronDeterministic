@@ -7,7 +7,7 @@ classdef material
  
     
     properties
-     sig_t = 0; %total cross-section
+        sig_t = 0; %total cross-section
         sig_s0 = 0; %zeroth moment of scattering cross-section
         sig_s1 = 0; %first moment of scattering cross-section
         sig_m = 0; % multiplication cross-section
@@ -24,7 +24,6 @@ classdef material
         %angular moments of scalar flux 
         phi0 
         phi1
-        phi2
     end
     
     methods
@@ -76,14 +75,14 @@ classdef material
         
         
         function [psi1, phi0new, phi1new, Qnew] = ...
-                step_characteristic(obj,Oz, psi0, phi0, phi1, Q)
-            
+                step_characteristic(obj,Oz, psi0, phi0, phi1, Q)            
             %Takes the direction of neutron flow, incoming angular flux and
             %0th to 2nd scalar fluxes and performs a step characteristics
             %transport sweep to determine the angular flux within material 
-            % and update the 0th to 2nd angular moments of the angular flux
+            % and update the 0th and first angular moments direction 
+            %contribution to the scalar flux
             
-            Delta = abs(obj.right - obj.left);
+            Delta = abs(obj.right - obj.left); %material width
             tau = obj.sig_t * Delta /abs(Oz); 
             
             %update the source
@@ -99,16 +98,27 @@ classdef material
         end
         
         
-        function [psi1, phi0new, phi1new, phi2new, Qnew] = ...
+        function [psi1, phi0new, phi1new, Qnew] = ...
                 diamond_difference(obj,Oz, psi0, phi0, phi1, Q)
-            
             %Takes the direction of neutron flow and the incoming angular
             %flux and performs a diamond difference transport sweep to
-            %determine angular flux within material and the 0th to 2nd 
-            %angular moments of the angular flux
+            %determine angular flux within material and the 0th and 1st 
+            %angular moment direction contribution to the scalar flux
             
-            Delta = (obj.right - obj.left);
-            tau = obj.sig_t * Delta / abs(Oz);
+           Delta = abs(obj.right - obj.left); %material width
+            tau = obj.sig_t * Delta /abs(Oz); 
+            
+            %update the source
+            Qnew = Q + phi0 * obj.sig_s0 + phi1 * Oz * obj.sig_s1 + ...
+                0.5 * obj.nu * obj.sig_m * phi0;
+            
+            %compute the exiting angular flux
+            psi1 = psi0 * (2 - tau) / (2 + tau) + ... 
+                Qnew / obj.sig_t * (1 - (2 - tau) / (2 + tau)); 
+            
+            %update "angle dependent" scalar flux
+            phi0new = (Qnew / obj.sig_t + (psi0 - psi1) / tau );
+            phi1new = (Qnew / obj.sig_t + (psi0 - psi1) / tau ) * Oz;  
          
         end
             
