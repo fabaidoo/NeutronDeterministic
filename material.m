@@ -75,8 +75,8 @@ classdef material
         end
         
         
-        function [psi1, phi0new, phi1new, phi2new, Q_new] = ...
-                step_characteristic(obj,Oz, psi0, phi0, phi1, phi2, Q)
+        function [psi1, phi0new, phi1new, Qnew] = ...
+                step_characteristic(obj,Oz, psi0, phi0, phi1, Q)
             
             %Takes the direction of neutron flow, incoming angular flux and
             %0th to 2nd scalar fluxes and performs a step characteristics
@@ -86,16 +86,21 @@ classdef material
             Delta = abs(obj.right - obj.left);
             tau = obj.sig_t * Delta /abs(Oz); 
             
-            psi1 = psi0 * exp(-tau ) + Q / obj.sig_t * (1 - exp( -tau )); 
+            %update the source
+            Qnew = Q + phi0 * obj.sig_s0 + phi1 * Oz * obj.sig_s1 + ...
+                0.5 * obj.nu * obj.sig_m * phi0;
             
+            %compute the exiting angular flux
+            psi1 = psi0 * exp(-tau) + Qnew / obj.sig_t * (1 - exp(-tau)); 
             
-            
-            
+            %update "angle dependent" scalar flux
+            phi0new = (Qnew / obj.sig_t + (psi0 - psi1) / tau );
+            phi1new = (Qnew / obj.sig_t + (psi0 - psi1) / tau ) * Oz;  
         end
         
         
-        function [psi1, phi0new, phi1new, phi2new, Q_new] = ...
-                diamond_difference(obj,Oz, psi0, phi0, phi1, phi2)
+        function [psi1, phi0new, phi1new, phi2new, Qnew] = ...
+                diamond_difference(obj,Oz, psi0, phi0, phi1, Q)
             
             %Takes the direction of neutron flow and the incoming angular
             %flux and performs a diamond difference transport sweep to
@@ -108,7 +113,7 @@ classdef material
         end
             
     end
-    
+  %{  
     methods(Static) 
         function P2_Oz = P2(Oz)
             %second order lagrange polynomial
@@ -118,7 +123,7 @@ classdef material
         
         
     end
-    
+ %}   
     
 end
 
