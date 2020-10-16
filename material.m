@@ -22,8 +22,8 @@ classdef material
         right_bnd = 1; %location of right boundary  
         
         %angular moments of scalar flux 
-        phi0 
-        phi1
+        %phi0 
+        %phi1
     end
     
     methods
@@ -74,7 +74,7 @@ classdef material
         end
         
         
-        function [psi1, phi0new, phi1new, Qnew] = ...
+        function [phi0new, phi1new, Qnew, psi1] = ...
                 step_characteristic(obj,Oz, psi0, phi0, phi1, Q)            
             %Takes the direction of neutron flow, incoming angular flux and
             %0th to 2nd scalar fluxes and performs a step characteristics
@@ -82,34 +82,34 @@ classdef material
             % and update the 0th and first angular moments direction 
             %contribution to the scalar flux
             
-            Delta = abs(obj.right - obj.left); %material width
-            tau = obj.sig_t * Delta /abs(Oz); 
+            Delta = abs(obj.right_bnd - obj.left_bnd); %material width
+            tau = obj.sig_t * Delta ./ abs(Oz); 
             
             %update the source
-            Qnew = Q + phi0 * obj.sig_s0 + phi1 * Oz * obj.sig_s1 + ...
+            Qnew = Q + phi0 * obj.sig_s0 + phi1 .* Oz .* obj.sig_s1 + ...
                 0.5 * obj.nu * obj.sig_m * phi0;
             
             %compute the exiting angular flux
             psi1 = psi0 * exp(-tau) + Qnew / obj.sig_t * (1 - exp(-tau)); 
             
             %update "angle dependent" scalar flux
-            phi0new = (Qnew / obj.sig_t + (psi0 - psi1) / tau );
-            phi1new = (Qnew / obj.sig_t + (psi0 - psi1) / tau ) * Oz;  
+            phi0new = (Qnew / obj.sig_t + (psi0 - psi1) / tau );% +phi0 ?
+            phi1new = (Qnew / obj.sig_t + (psi0 - psi1) / tau ) .* Oz;  
         end
         
         
-        function [psi1, phi0new, phi1new, Qnew] = ...
+        function [phi0new, phi1new, Qnew, psi1] = ...
                 diamond_difference(obj,Oz, psi0, phi0, phi1, Q)
             %Takes the direction of neutron flow and the incoming angular
             %flux and performs a diamond difference transport sweep to
             %determine angular flux within material and the 0th and 1st 
             %angular moment direction contribution to the scalar flux
             
-           Delta = abs(obj.right - obj.left); %material width
-            tau = obj.sig_t * Delta /abs(Oz); 
+           Delta = abs(obj.right_bnd - obj.left_bnd); %material width
+            tau = obj.sig_t * Delta ./ abs(Oz); 
             
             %update the source
-            Qnew = Q + phi0 * obj.sig_s0 + phi1 * Oz * obj.sig_s1 + ...
+            Qnew = Q + phi0 * obj.sig_s0 + phi1 .* Oz .* obj.sig_s1 + ...
                 0.5 * obj.nu * obj.sig_m * phi0;
             
             %compute the exiting angular flux
@@ -118,20 +118,18 @@ classdef material
             
             %update "angle dependent" scalar flux
             phi0new = (Qnew / obj.sig_t + (psi0 - psi1) / tau );
-            phi1new = (Qnew / obj.sig_t + (psi0 - psi1) / tau ) * Oz;  
+            phi1new = (Qnew / obj.sig_t + (psi0 - psi1) / tau ) .* Oz;  
          
         end
             
     end
+    
   %{  
     methods(Static) 
         function P2_Oz = P2(Oz)
             %second order lagrange polynomial
             P2_Oz = (3 * Oz.^2 - 1 ) / 2;
-  
-        end
-        
-        
+        end   
     end
  %}   
     

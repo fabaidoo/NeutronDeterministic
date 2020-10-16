@@ -3,10 +3,10 @@ function Oz = angles(flag, n)
 %flag = 'discrete' gives Oz = [-1 1] and flag = 'lsgq' gives the S_n level 
 %set gauss quadrature points for n = 2, 4, 6, 8, 10, 12, 14, 16, 18, 20.
 if strcmpi(flag, 'discrete') == 1
-    Oz = [-1 1];
+    Oz = [-1; 1];
     
 elseif strcmpi(flag, 'lsgq') == 1
-    Oz = lsgq(n);
+    Oz = lsgq(n)';
        
 else
     error('Angle option not available')   
