@@ -75,7 +75,7 @@ classdef material
         
         
         function [phi0new, phi1new, Qnew, psi1] = ...
-                step_characteristic(obj,Oz, psi0, phi0, phi1, Q)            
+                step_characteristics(obj,Oz, psi0, phi0, phi1, Q)            
             %Takes the direction of neutron flow, incoming angular flux and
             %0th to 2nd scalar fluxes and performs a step characteristics
             %transport sweep to determine the angular flux within material 
