@@ -74,62 +74,81 @@ classdef material
         end
         
         
-        function [phi0new, phi1new, Qnew, psi1] = ...
-                step_characteristics(obj,Oz, psi0, phi0, phi1, Q)            
+        function [phi0new, phi1new, psi1] = ...
+                step_characteristics(obj,ang_flag, n, psi0, phi0, phi1)            
             %Takes the direction of neutron flow, incoming angular flux and
             %0th to 2nd scalar fluxes and performs a step characteristics
-            %transport sweep to determine the angular flux within material 
-            % and update the 0th and first angular moments direction 
-            %contribution to the scalar flux
+            %transport sweep to determine outgoing angular flux within
+            %material and the 0th and 1st angular moments of the average 
+            %angular flux in material.
             
+            [Oz, w] = ang(ang_flag, n);
             Delta = abs(obj.right_bnd - obj.left_bnd); %material width
-            tau = obj.sig_t * Delta ./ abs(Oz); 
+            tau = obj.sig_t * Delta ./ abs(Oz); %has same shape as Oz 
             
             %update the source
-            Qnew = Q + phi0 * obj.sig_s0 + phi1 .* Oz .* obj.sig_s1 + ...
-                0.5 * obj.nu * obj.sig_m * phi0;
+            %Q_Oz =  phi0 * obj.sig_s0 + phi1 .* Oz .* obj.sig_s1 + ...
+            %    0.5 * obj.nu * obj.sig_m * phi0;
+            
+            Qnew = obj.Q0 + obj.sig_s0 * phi0 + obj.sig_1 * phi1 * Oz ...
+                +.5 * obj.nu * obj.sig_m * phi0;
             
             %compute the exiting angular flux
-            psi1 = psi0 * exp(-tau) + Qnew / obj.sig_t * (1 - exp(-tau)); 
+            psi1 = psi0 .* exp(-tau) + (Qnew ./ obj.sig_t) .* ...
+                (1 - exp(-tau)); 
             
-            %update "angle dependent" scalar flux
-            phi0new = (Qnew / obj.sig_t + (psi0 - psi1) / tau );% +phi0 ?
-            phi1new = (Qnew / obj.sig_t + (psi0 - psi1) / tau ) .* Oz;  
+            %update angular moments of  average flux
+            phi0new = sum((Qnew / obj.sig_t + (psi0 - psi1) ./ tau ) .* w);
+            phi1new = sum((Qnew / obj.sig_t + (psi0 - psi1) ./ tau ) .* Oz...
+                .* w);
+            
         end
         
         
-        function [phi0new, phi1new, Qnew, psi1] = ...
-                diamond_difference(obj,Oz, psi0, phi0, phi1, Q)
+        function [phi0new, phi1new, psi1] = ...
+                diamond_difference(obj,ang_flag, n, psi0, phi0, phi1)%, Q)
             %Takes the direction of neutron flow and the incoming angular
             %flux and performs a diamond difference transport sweep to
-            %determine angular flux within material and the 0th and 1st 
-            %angular moment direction contribution to the scalar flux
+            %determine outgoing angular flux within material and the 0th 
+            %and 1st angular moments of the average angular flux in
+            %material. 
             
-           Delta = abs(obj.right_bnd - obj.left_bnd); %material width
-            tau = obj.sig_t * Delta ./ abs(Oz); 
+            [Oz, w] = ang(ang_flag, n);
+            Delta = abs(obj.right_bnd - obj.left_bnd); %material width
+            tau = obj.sig_t * Delta ./ abs(Oz); %has same shape as Oz 
             
             %update the source
-            Qnew = Q + phi0 * obj.sig_s0 + phi1 .* Oz .* obj.sig_s1 + ...
-                0.5 * obj.nu * obj.sig_m * phi0;
+            %Q_Oz =  phi0 * obj.sig_s0 + phi1 .* Oz .* obj.sig_s1 + ...
+            %    0.5 * obj.nu * obj.sig_m * phi0;
+            
+            Qnew = obj.Q0 + obj.sig_s0 * phi0 + obj.sig_1 * phi1 * Oz ...
+                +.5 * obj.nu * obj.sig_m * phi0;
             
             %compute the exiting angular flux
-            psi1 = psi0 * (2 - tau) / (2 + tau) + ... 
-                Qnew / obj.sig_t * (1 - (2 - tau) / (2 + tau)); 
+            psi1 = psi0 .* (2 - tau) ./ (2 + tau) + ... 
+                (Qnew ./ obj.sig_t) .* (1 - (2 - tau) ./ (2 + tau)); 
             
-            %update "angle dependent" scalar flux
-            phi0new = (Qnew / obj.sig_t + (psi0 - psi1) / tau );
-            phi1new = (Qnew / obj.sig_t + (psi0 - psi1) / tau ) .* Oz;  
-         
+            %update angular moments of  average flux
+            phi0new = sum((Qnew / obj.sig_t + (psi0 - psi1) ./ tau ) .* w);
+            phi1new = sum((Qnew / obj.sig_t + (psi0 - psi1) ./ tau ) .* Oz...
+                .* w);
+            
         end
             
     end
     
-  %{  
+  %{;  
     methods(Static) 
+       %{
         function P2_Oz = P2(Oz)
             %second order lagrange polynomial
             P2_Oz = (3 * Oz.^2 - 1 ) / 2;
-        end   
+        end  
+        %}
+        function [a, w] = ang(flag, n)
+            [a, w] = angles(flag, n);  
+        end
+        
     end
  %}   
     
