@@ -53,7 +53,7 @@ for i = 1: length(n)
     title(str)
     
     figure(figdd2)
-    sgtitle('Diamond difference error in Pure Absorber')
+    sgtitle('Diamond difference relative error in Pure Absorber')
     subplot(2, 2, i)
     plot(x, abs(phi0_dd - sol)./sol, 'b', 'LineWidth', 2 )
     xlabel('x')
@@ -72,7 +72,7 @@ for i = 1: length(n)
     title(str)
     
     figure(figsc2)
-    sgtitle('Step characteristics error in Pure Absorber')
+    sgtitle('Step characteristics relative error in Pure Absorber')
     subplot(2, 2, i)
     plot(x, abs(phi0_sc - sol)./sol, 'r', 'LineWidth', 2 )
     xlabel('x')
@@ -86,7 +86,8 @@ loglog(1./n, L2_error_dd,'b.-',  1./n, L2_error_sc, 'r.-',...
     'MarkerSize', 20, 'LineWidth', 2)
 legend('Diamond difference', 'Step Characteristic')
 xlabel('mesh size')
-ylabel('L2 error')
+ylabel('L^2 error')
+title('Convergence rate in Pure Absorber')
 
 
 
