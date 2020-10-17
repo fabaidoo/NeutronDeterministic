@@ -5,7 +5,7 @@ function [Oz, w] = angles(flag, n)
 %12, 14, 16, 18, 20.
 if strcmpi(flag, 'discrete') == 1
     Oz = [-1; 1];
-    w = [1/(3); 1 /(3)];
+    w = [1; 1];
     
 elseif strcmpi(flag, 'glq') == 1
     [Oz, w] = glq(n);

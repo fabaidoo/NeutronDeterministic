@@ -1,4 +1,4 @@
-function [phi0, phi1, psil] = diamond_difference(edges, slab, psi_l,...
+function [phi0, phi1] = diamond_difference(edges, slab, psi_l,...
     psi_r, ang_flag, k, tol)
 %Given a slab discretized by 'edges' and decribed 'mat' for each sub
 %-domain we perform diamond difference transport sweep using the boundary 
@@ -15,7 +15,7 @@ psil = zeros(lenOz, len + 1); %for forward sweeps
 psir = zeros(lenOz, len + 1); %for backward sweeps
 psil(:, 1) = psi_l; %fill in left-side boundary
 psir(:, len + 1) = psi_r; %fill in right-side boundary
-
+size(psil)
 %initial guesses for moment of scalar flux
 phi0 = rand(1, len); 
 phi1 = rand(1, len); 
@@ -31,19 +31,19 @@ iter = 0; %iteration count
 while err > tol && iter <= max_iter
     %old values to compare to new values
     
+    
     for j = 1 : lenOz
         if Oz(j) > 0 %forward sweep 
             for k = 1: len
                 obj = slab{k};
-                
+               
                 %calculate outgoing flux and modified source
                 [psil(j, k+1), Q] = obj.diamond_diff(Oz(j), psil(j, k),...
                     phi0(k), phi1(k));
-                
+                disp(k)
                 %calculate PHI term for given value of Oz
                 [phi0_ang(j, k), phi1_ang(j, k)] = obj.phi_maker(Oz(j),...
                     w(j), Q, psil(j,k), psil(j, k+1));
-                
             end
                   
          elseif Oz(j) < 0 %backward sweep
