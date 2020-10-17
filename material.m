@@ -86,10 +86,7 @@ classdef material
             Delta = abs(obj.right_bnd - obj.left_bnd); %material width
             tau = obj.sig_t * Delta ./ abs(Oz); %has same shape as Oz 
             
-            %update the source
-            %Q_Oz =  phi0 * obj.sig_s0 + phi1 .* Oz .* obj.sig_s1 + ...
-            %    0.5 * obj.nu * obj.sig_m * phi0;
-            
+           
             Qnew = obj.Q0 + obj.sig_s0 * phi0 + obj.sig_1 * phi1 * Oz ...
                 +.5 * obj.nu * obj.sig_m * phi0;
             
@@ -106,7 +103,7 @@ classdef material
         
         
         function [phi0new, phi1new, psi1] = ...
-                diamond_difference(obj,ang_flag, n, psi0, phi0, phi1)%, Q)
+                diamond_difference(obj,ang_flag, n, psil, psir, phi0, phi1)
             %Takes the direction of neutron flow and the incoming angular
             %flux and performs a diamond difference transport sweep to
             %determine outgoing angular flux within material and the 0th 
@@ -116,10 +113,15 @@ classdef material
             [Oz, w] = ang(ang_flag, n);
             Delta = abs(obj.right_bnd - obj.left_bnd); %material width
             tau = obj.sig_t * Delta ./ abs(Oz); %has same shape as Oz 
-            
-            %update the source
-            %Q_Oz =  phi0 * obj.sig_s0 + phi1 .* Oz .* obj.sig_s1 + ...
-            %    0.5 * obj.nu * obj.sig_m * phi0;
+            psi0 = zeros(length(Oz), 1);
+            for i = 1: length(Oz) 
+                if Oz(i) > 0
+                     psi0(i) = psil(i);
+                elseif Oz(i) < 0
+                   psi0(i) = psir(i); 
+                end
+            end
+           
             
             Qnew = obj.Q0 + obj.sig_s0 * phi0 + obj.sig_1 * phi1 * Oz ...
                 +.5 * obj.nu * obj.sig_m * phi0;
@@ -133,6 +135,54 @@ classdef material
             phi1new = sum((Qnew / obj.sig_t + (psi0 - psi1) ./ tau ) .* Oz...
                 .* w);
             
+        end
+        
+        function [psi_out, Qnew] = diamond_diff(obj, Oz, psi_in, phi0, phi1)
+            %takes incoming angular flux and previous 0th and 1st angular 
+            %moments of average and calculates outgoing angular flux via
+            %diamond difference method
+            
+            Delta = abs(obj.right_bnd - obj.left_bnd); %material width
+            tau = obj.sig_t * Delta ./ abs(Oz); 
+            
+            %total source term
+            Qnew = obj.Q0 + obj.sig_s0 * phi0 + obj.sig_s1 * phi1 * Oz ...
+                + .5 * obj.nu * obj.sig_m * phi0;
+            
+             %compute the exiting angular flux
+            psi_out = psi_in .* (2 - tau) ./ (2 + tau) + ... 
+                (Qnew ./ obj.sig_t) .* (1 - (2 - tau) ./ (2 + tau));
+            
+        end       
+        
+        function [psi_out, Qnew] = step_char(obj, Oz, psi_in, phi0, phi1)
+            %takes incoming angular flux and previous 0th and 1st angular 
+            %moments of average and calculates outgoing angular flux via
+            %step characteristics method
+            
+            Delta = abs(obj.right_bnd - obj.left_bnd); %material width
+            tau = obj.sig_t * Delta ./ abs(Oz); 
+            
+            %total source term
+            Qnew = obj.Q0 + obj.sig_s0 * phi0 + obj.sig_s1 * phi1 * Oz ...
+                +.5 * obj.nu * obj.sig_m * phi0;
+            
+            %compute the exiting angular flux
+            psi_out = psi_in .* exp(-tau) + (Qnew ./ obj.sig_t) .* ...
+                (1 - exp(-tau)); 
+        end
+        
+        function [phi0_out, phi1_out] = phi_maker(obj, Oz, w, Q, psi0,...
+                psi1)
+            %Provides terms for new angular moments of phi for material. 
+            %Takes angle Oz and its weight, incoming and outgoing psis
+            %and modified source
+            
+            Delta = abs(obj.right_bnd - obj.left_bnd); %material width
+            tau = obj.sig_t * Delta ./ abs(Oz); %has same shape as Oz 
+            
+            phi0_out = (Q / obj.sig_t + (psi0 - psi1) / tau ) * w;
+            phi1_out = (Q / obj.sig_t + (psi0 - psi1) / tau ) * Oz * w;
         end
             
     end
