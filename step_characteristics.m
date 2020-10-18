@@ -2,7 +2,7 @@ function [phi0, phi1] = step_characteristics(edges, slab, psi_l,...
     psi_r, ang_flag, k, tol)
 
 %Given a slab discretized by 'edges' and decribed 'mat' for each sub
-%-domain we perform diamond difference transport sweep using the boundary 
+%-domain we perform step characteristics transport sweep using the boundary 
 %conditions psi0_r, psi1_l and the angular discretization given by ang_flag
 %and k until solutions are within a given tolerance tol
 if length(edges) ~= (length(slab) + 1)
@@ -27,7 +27,7 @@ phi1_ang = zeros(lenOz, len);
 
 err = sqrt(sum(phi0.^2) + sum(phi1.^2)); %error in calculated phis
 
-max_iter = 3e02; %break while loop after max_iter iterations 
+max_iter = 3e03; %break while loop after max_iter iterations 
 iter = 0; %iteration count
 while err > tol && iter <= max_iter
     %old values to compare to new values

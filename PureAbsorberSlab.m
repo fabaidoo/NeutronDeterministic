@@ -22,7 +22,7 @@ for i = 1: length(n)
     S_t = slab{1}.sig_t; %TOTAL CROSS-SECTION OF SLAB
     
     %DEFINE BOUNDARY CONDITIONS 
-    psil = [0; S_t];
+    psil = [0; 1];
     psir = [0; 0];
     %TYPE OF ANGULAR DISCRETIZATION
     flag = 'discrete';
@@ -38,7 +38,7 @@ for i = 1: length(n)
     
     x = edges(1: n(i)) + 1/(2 * n(i));%DISCRETIZED DOMAIN
     %TRUE SOLUTION
-    sol = S_t * exp( - S_t * x); 
+    sol = exp( - S_t * x); 
     
     L2_error_dd(i) = sqrt(sum((sol - phi0_dd).^2)/n(i));
     L2_error_sc(i) = sqrt(sum((sol - phi0_sc).^2 )/n(i));

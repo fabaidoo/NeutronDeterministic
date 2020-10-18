@@ -151,10 +151,9 @@ classdef material
             
              %compute the exiting angular flux
             psi_out = psi_in .* (2 - tau) ./ (2 + tau) + ... 
-                (Qnew ./ obj.sig_t) .* (1 - (2 - tau) ./ (2 + tau));
-            
-        end       
-        
+                (Qnew ./ obj.sig_t) .* (1 - (2 - tau) ./ (2 + tau)); 
+        end
+    
         function [psi_out, Qnew] = step_char(obj, Oz, psi_in, phi0, phi1)
             %takes incoming angular flux and previous 0th and 1st angular 
             %moments of average and calculates outgoing angular flux via
@@ -181,8 +180,10 @@ classdef material
             Delta = abs(obj.right_bnd - obj.left_bnd); %material width
             tau = obj.sig_t * Delta ./ abs(Oz); %has same shape as Oz 
             
-            phi0_out = (Q / obj.sig_t + (psi0 - psi1) / tau ) * w;
-            phi1_out = (Q / obj.sig_t + (psi0 - psi1) / tau ) * Oz * w;
+            phi0_out = 1/2 * (Q / obj.sig_t + (psi0 - psi1) / tau ) * w;
+            
+            phi1_out = 3/2 * (Q / obj.sig_t + (psi0 - psi1) / tau ) * Oz...
+                * w;
         end
             
     end

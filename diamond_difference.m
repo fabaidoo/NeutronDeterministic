@@ -10,29 +10,29 @@ end
 
 len = length(slab);
 [Oz, w] = angles(ang_flag, k); %angular discretization
+%w = ones(length(w), 1);
 lenOz = length(Oz); 
 psil = zeros(lenOz, len + 1); %for forward sweeps
 psir = zeros(lenOz, len + 1); %for backward sweeps
 psil(:, 1) = psi_l; %fill in left-side boundary
 psir(:, len + 1) = psi_r; %fill in right-side boundary
-size(psil)
-%initial guesses for moment of scalar flux
-phi0 = rand(1, len); 
-phi1 = rand(1, len); 
 
-%itermediary vectors
+%angular contributions to PHIs are stored here before addition
 phi0_ang = zeros(lenOz, len);
-phi1_ang = zeros(lenOz, len); 
+phi1_ang = zeros(lenOz, len);
 
-err = sqrt(sum(phi0.^2) + sum(phi1.^2)); %error in calculated phis
+%initial guesses for moment of scalar flux
+phi0 = zeros(1, len);% rand(1, len);
+phi1 = zeros(1, len);% rand(1, len);
+
+err = Inf  ; %error in calculated phis
 
 max_iter = 3e02; %break while loop after max_iter iterations 
 iter = 0; %iteration count
-while err > tol && iter <= max_iter
-    %old values to compare to new values
-    
+while iter <= max_iter && err > tol  
     
     for j = 1 : lenOz
+        
         if Oz(j) > 0 %forward sweep 
             for k = 1: len
                 obj = slab{k};
@@ -40,7 +40,8 @@ while err > tol && iter <= max_iter
                 %calculate outgoing flux and modified source
                 [psil(j, k+1), Q] = obj.diamond_diff(Oz(j), psil(j, k),...
                     phi0(k), phi1(k));
-                disp(k)
+               
+                
                 %calculate PHI term for given value of Oz
                 [phi0_ang(j, k), phi1_ang(j, k)] = obj.phi_maker(Oz(j),...
                     w(j), Q, psil(j,k), psil(j, k+1));
@@ -58,20 +59,21 @@ while err > tol && iter <= max_iter
                  %calculate PHI term for given value of Oz
                  [phi0_ang(j, i), phi1_ang(j, i)] = obj.phi_maker(Oz(j),...
                      w(j), Q, psir(j, i+1), psir(j, i));
-                
              end
         end
+        
     end
-    
     oldphi0 = phi0;
     oldphi1 = phi1;
-    phi0 = sum(phi0_ang); %sum over angles 
-    phi1 = sum(phi1_ang); %to update PHIs
+    phi0 =  sum(phi0_ang); %sum over angles 
+    phi1 =  sum(phi1_ang); %to update PHIs
+    
     
     %update error
     err = sqrt( sum((oldphi0 - phi0).^2) + sum((oldphi1 - phi1).^2) );
     
     iter = iter + 1; %update iteration count 
+    %disp(iter)
     
     if iter == max_iter
         disp(err)
@@ -79,12 +81,6 @@ while err > tol && iter <= max_iter
     end
            
 end
- 
- %Q = obj.Q0;
- % [phi0_ang(j, i), phi1_ang(j, i), Q, psir(:, i)] = ...
- %     obj.diamond_difference(Oz(j), psir(:, i+1),...
- %     phi0(i), phi1(i), Q); 
- % mat{i}.Q0 = Q; %update material source
 
 
 end
