@@ -60,7 +60,7 @@ for i = 1: length(n)
     z = edges(1: n(i)) +  h / 2  ;%DOMAIN POINTS
     
     %FILL IN DIFFUSION SOLUTIONS
-     phi0diff{i} = 1.55d * exp(- z * A);
+     phi0diff{i} = 1.55 * exp(- z * A);
      phi1diff{i} = 0.2 * exp(- z * A);
      
      
