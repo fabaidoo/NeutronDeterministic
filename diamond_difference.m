@@ -10,7 +10,6 @@ end
 
 len = length(slab);
 [Oz, w] = angles(ang_flag, k); %angular discretization
-%w = ones(length(w), 1);
 lenOz = length(Oz); 
 psil = zeros(lenOz, len + 1); %for forward sweeps
 psir = zeros(lenOz, len + 1); %for backward sweeps
@@ -25,9 +24,9 @@ phi1_ang = zeros(lenOz, len);
 phi0 = zeros(1, len);% rand(1, len);
 phi1 = zeros(1, len);% rand(1, len);
 
-err = Inf  ; %error in calculated phis
+err = 50  ; %error in calculated phis
 
-max_iter = 3e02; %break while loop after max_iter iterations 
+max_iter = 3e03; %break while loop after max_iter iterations 
 iter = 0; %iteration count
 while iter <= max_iter && err > tol  
     

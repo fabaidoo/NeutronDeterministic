@@ -1,8 +1,8 @@
 function PureAbsorberSlab
 %1cm slab of pure absorber discretized into n equal pieces. Discrete source
-%on the left side
+%on the left side. Discrete angular discretization
 
-n = [10 100 1000 10000];
+n = [25 50 100 200];%[10 100 1000 10000];
 L2_error_dd = zeros(1, length(n));
 L2_error_sc = zeros(1, length(n));
 

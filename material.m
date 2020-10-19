@@ -146,8 +146,8 @@ classdef material
             tau = obj.sig_t * Delta ./ abs(Oz); 
             
             %total source term
-            Qnew = obj.Q0 + obj.sig_s0 * phi0 + obj.sig_s1 * phi1 * Oz ...
-                + .5 * obj.nu * obj.sig_m * phi0;
+            Qnew = obj.Q0 + 0.5 * obj.sig_s0 * phi0 + 1.5 * obj.sig_s1...
+                * phi1 * Oz + .5 * obj.nu * obj.sig_m * phi0;
             
              %compute the exiting angular flux
             psi_out = psi_in .* (2 - tau) ./ (2 + tau) + ... 
@@ -163,8 +163,8 @@ classdef material
             tau = obj.sig_t * Delta ./ abs(Oz); 
             
             %total source term
-            Qnew = obj.Q0 + obj.sig_s0 * phi0 + obj.sig_s1 * phi1 * Oz ...
-                +.5 * obj.nu * obj.sig_m * phi0;
+            Qnew = obj.Q0 + 0.5 * obj.sig_s0 * phi0 + 1.5 * obj.sig_s1...
+                * phi1 * Oz +.5 * obj.nu * obj.sig_m * phi0;
             
             %compute the exiting angular flux
             psi_out = psi_in .* exp(-tau) + (Qnew ./ obj.sig_t) .* ...
@@ -180,9 +180,9 @@ classdef material
             Delta = abs(obj.right_bnd - obj.left_bnd); %material width
             tau = obj.sig_t * Delta ./ abs(Oz); %has same shape as Oz 
             
-            phi0_out = 1/2 * (Q / obj.sig_t + (psi0 - psi1) / tau ) * w;
+            phi0_out =  (Q / obj.sig_t + (psi0 - psi1) / tau ) * w;
             
-            phi1_out = 3/2 * (Q / obj.sig_t + (psi0 - psi1) / tau ) * Oz...
+            phi1_out = (Q / obj.sig_t + (psi0 - psi1) / tau ) * Oz...
                 * w;
         end
             
