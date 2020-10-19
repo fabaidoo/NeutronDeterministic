@@ -85,7 +85,7 @@ color = hsv(length(m));
 
 for k = 1: length(m)
     figure(fig0)
-    strdd = sprintf('Diamond Differenc2 S{%i}', m(k));
+    strdd = sprintf('Diamond Differencecolormap S{%i}', m(k));
     strsc = sprintf('Step Characteristics S{%i}', m(k));
     
     plot(1 ./n, err0dd{k}, '.--','DisplayName', strdd, 'LineWidth', 2,...
@@ -106,10 +106,13 @@ end
 
 figure(fig0)
 title('L^2 error between Diffusion and Spatial Discretizations for \phi_0', 'FontSize', 15)
-legend
+lgd0 = legend;
+lgd0.Location = 'northwest';
+lgd0.FontSize = 14;
 
 figure(fig1)
 title('L^2 error between Diffusion and Spatial Discretizations for \phi_1', 'FontSize', 15)
-legend
-
+lgd1 = legend;
+lgd1.Location = 'northwest';
+lgd1.FontSize = 14;
 end
