@@ -73,70 +73,6 @@ classdef material
             end     
         end
         
-        
-        function [phi0new, phi1new, psi1] = ...
-                step_characteristics(obj,ang_flag, n, psi0, phi0, phi1)            
-            %Takes the direction of neutron flow, incoming angular flux and
-            %0th to 2nd scalar fluxes and performs a step characteristics
-            %transport sweep to determine outgoing angular flux within
-            %material and the 0th and 1st angular moments of the average 
-            %angular flux in material.
-            
-            [Oz, w] = ang(ang_flag, n);
-            Delta = abs(obj.right_bnd - obj.left_bnd); %material width
-            tau = obj.sig_t * Delta ./ abs(Oz); %has same shape as Oz 
-            
-           
-            Qnew = obj.Q0 + obj.sig_s0 * phi0 + obj.sig_1 * phi1 * Oz ...
-                +.5 * obj.nu * obj.sig_m * phi0;
-            
-            %compute the exiting angular flux
-            psi1 = psi0 .* exp(-tau) + (Qnew ./ obj.sig_t) .* ...
-                (1 - exp(-tau)); 
-            
-            %update angular moments of  average flux
-            phi0new = sum((Qnew / obj.sig_t + (psi0 - psi1) ./ tau ) .* w);
-            phi1new = sum((Qnew / obj.sig_t + (psi0 - psi1) ./ tau ) .* Oz...
-                .* w);
-            
-        end
-        
-        
-        function [phi0new, phi1new, psi1] = ...
-                diamond_difference(obj,ang_flag, n, psil, psir, phi0, phi1)
-            %Takes the direction of neutron flow and the incoming angular
-            %flux and performs a diamond difference transport sweep to
-            %determine outgoing angular flux within material and the 0th 
-            %and 1st angular moments of the average angular flux in
-            %material. 
-            
-            [Oz, w] = ang(ang_flag, n);
-            Delta = abs(obj.right_bnd - obj.left_bnd); %material width
-            tau = obj.sig_t * Delta ./ abs(Oz); %has same shape as Oz 
-            psi0 = zeros(length(Oz), 1);
-            for i = 1: length(Oz) 
-                if Oz(i) > 0
-                     psi0(i) = psil(i);
-                elseif Oz(i) < 0
-                   psi0(i) = psir(i); 
-                end
-            end
-           
-            
-            Qnew = obj.Q0 + obj.sig_s0 * phi0 + obj.sig_1 * phi1 * Oz ...
-                +.5 * obj.nu * obj.sig_m * phi0;
-            
-            %compute the exiting angular flux
-            psi1 = psi0 .* (2 - tau) ./ (2 + tau) + ... 
-                (Qnew ./ obj.sig_t) .* (1 - (2 - tau) ./ (2 + tau)); 
-            
-            %update angular moments of  average flux
-            phi0new = sum((Qnew / obj.sig_t + (psi0 - psi1) ./ tau ) .* w);
-            phi1new = sum((Qnew / obj.sig_t + (psi0 - psi1) ./ tau ) .* Oz...
-                .* w);
-            
-        end
-        
         function [psi_out, Qnew] = diamond_diff(obj, Oz, psi_in, phi0, phi1)
             %takes incoming angular flux and previous 0th and 1st angular 
             %moments of average and calculates outgoing angular flux via
@@ -147,7 +83,7 @@ classdef material
             
             %total source term
             Qnew = obj.Q0 + 0.5 * obj.sig_s0 * phi0 + 1.5 * obj.sig_s1...
-                * phi1 * Oz + .5 * obj.nu * obj.sig_m * phi0;
+                * phi1 * Oz + .5 * obj.nu * obj.sig_m * phi0 / (4 * pi);
             
              %compute the exiting angular flux
             psi_out = psi_in .* (2 - tau) ./ (2 + tau) + ... 
@@ -164,7 +100,7 @@ classdef material
             
             %total source term
             Qnew = obj.Q0 + 0.5 * obj.sig_s0 * phi0 + 1.5 * obj.sig_s1...
-                * phi1 * Oz +.5 * obj.nu * obj.sig_m * phi0;
+                * phi1 * Oz +.5 * obj.nu * obj.sig_m * phi0 / (4 * pi);
             
             %compute the exiting angular flux
             psi_out = psi_in .* exp(-tau) + (Qnew ./ obj.sig_t) .* ...
@@ -187,21 +123,7 @@ classdef material
         end
             
     end
-    
-  %{;  
-    methods(Static) 
-       %{
-        function P2_Oz = P2(Oz)
-            %second order lagrange polynomial
-            P2_Oz = (3 * Oz.^2 - 1 ) / 2;
-        end  
-        %}
-        function [a, w] = ang(flag, n)
-            [a, w] = angles(flag, n);  
-        end
-        
-    end
- %}   
+      
     
 end
 
