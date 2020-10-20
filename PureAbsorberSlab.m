@@ -1,6 +1,6 @@
 function PureAbsorberSlab
 %1cm slab of pure absorber discretized into n equal pieces. Discrete source
-%on the left side. Discrete angular discretization
+%on the left side. Discrete angular discretization. We plot the scalar flux
 
 n = [25 50 100 200];%[10 100 1000 10000];
 L2_error_dd = zeros(1, length(n));
@@ -30,10 +30,10 @@ for i = 1: length(n)
     tol = eps;
     
     %DIAMOND DIFFERENCE SOLUTION
-    [phi0_dd, ~] = diamond_difference(edges, slab, psil, psir, flag,...
+    [phi0_dd, ~, ~] = diamond_difference(edges, slab, psil, psir, flag,...
     2, tol);
     %STEP CHARACTERISTICS SOLUTION
-    [phi0_sc, ~] = step_characteristics(edges, slab, psil, psir, flag,...
+    [phi0_sc, ~, ~] = step_characteristics(edges, slab, psil, psir, flag,...
     2, tol);
     
     x = edges(1: n(i)) + 1/(2 * n(i));%DISCRETIZED DOMAIN
