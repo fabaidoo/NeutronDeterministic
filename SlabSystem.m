@@ -48,8 +48,8 @@ for i = 1: length(n)
     [phi0dd, phi1dd] = diamond_difference(edges, slab, psil, psir,...
         flag, n(i), tol);
    
-    strdd = sprintf('Diamond difference with GLQ n = %i', n(i));
-    strsc = sprintf('Step characteristics with GLQ n = %i', n(i));
+    strdd = sprintf('DD GLQ n = %i', n(i));
+    strsc = sprintf('SC GLQ n = %i', n(i));
     figure(fig0)
     plot(z, phi0dd,'-', 'LineWidth', 2, ...                                  'Marker', '.', 'MarkerSize', 15,
         'Color', color(i, :), 'DisplayName', strdd)
