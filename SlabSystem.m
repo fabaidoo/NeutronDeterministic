@@ -75,7 +75,6 @@ title(['\phi_0' str0],'FontSize', 18)
 lgd0 = legend;
 lgd0.FontSize = 14;
 t=gca; t.XAxis.TickLength = [0 0];
-%set(gca,'XTick',[])
 xlabel('z (cm)')
 xlim([mat_edges(1) mat_edges(length(mat_edges))])
 
@@ -88,25 +87,4 @@ lgd1.FontSize = 14;
 t=gca; t.XAxis.TickLength = [0 0];
 xlabel('z (cm)')
 xlim([mat_edges(1) mat_edges(length(mat_edges))])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    
-
-
-
-
-
 end

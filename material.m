@@ -39,7 +39,7 @@ classdef material
                obj.mattype = 'fuel';
                obj.sig_t = 1;
                obj.sig_m = .2 ;
-               obj.nu = 4;
+               obj.nu = 2.5;
                obj.sig_s0 = .6;
                obj.sig_s1 = .1;
             elseif strcmpi(mat_type, 'reflector') == 1
@@ -83,7 +83,7 @@ classdef material
             
             %total source term
             Qnew = obj.Q0 + 0.5 * obj.sig_s0 * phi0 + 1.5 * obj.sig_s1...
-                * phi1 * Oz + .5 * obj.nu * obj.sig_m * phi0 / (4 * pi);
+                * phi1 * Oz + 0.5 * obj.nu * obj.sig_m * phi0;% / (4 * pi);
             
              %compute the exiting angular flux
             psi_out = psi_in .* (2 - tau) ./ (2 + tau) + ... 
@@ -100,7 +100,7 @@ classdef material
             
             %total source term
             Qnew = obj.Q0 + 0.5 * obj.sig_s0 * phi0 + 1.5 * obj.sig_s1...
-                * phi1 * Oz +.5 * obj.nu * obj.sig_m * phi0 / (4 * pi);
+                * phi1 * Oz + 0.5 * obj.nu * obj.sig_m * phi0;% / (4 * pi);
             
             %compute the exiting angular flux
             psi_out = psi_in .* exp(-tau) + (Qnew ./ obj.sig_t) .* ...

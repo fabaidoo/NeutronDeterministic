@@ -75,7 +75,7 @@ while err > tol && iter <= max_iter
     iter = iter + 1; %update iteration count 
     
     if iter == max_iter
-        disp(err)
+        disp(['Final error is' num2str(err)])
         error('Maximum number of iterations achieved')
     end
            

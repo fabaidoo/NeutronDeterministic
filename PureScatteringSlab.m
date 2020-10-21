@@ -1,7 +1,8 @@
 function PureScatteringSlab
 %1cm slab of scatterer material discretized into n equal pieces. Isotropic
 %source on left boundary. Gauss-Legendre quadrature for angular
-%discretization n = 2,4, 6, 8
+%discretization n = 2,4, 6, 8. Plots the difference between diffusion
+%solution and dicretized solutions.
 
 n = [25 50 100 200]; %SPATIAL DISCRETIZATIONS
 
@@ -79,6 +80,7 @@ for i = 1: length(n)
   
 end
 
+
 fig0 = figure;
 fig1 = figure;
 color = hsv(length(m));
@@ -115,4 +117,5 @@ title('L^2 error between Diffusion and Spatial Discretizations for \phi_1', 'Fon
 lgd1 = legend;
 lgd1.Location = 'northwest';
 lgd1.FontSize = 14;
+
 end
