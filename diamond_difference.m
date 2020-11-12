@@ -39,7 +39,7 @@ while iter <= max_iter && err > tol
                 %calculate outgoing flux and modified source
                 [psil(j, k+1), Q] = obj.diamond_diff(Oz(j), psil(j, k),...
                     phi0(k), phi1(k));
-               a
+               
                 
                 %calculate PHI term for given value of Oz
                 [phi0_ang(j, k), phi1_ang(j, k)] = obj.phi_maker(Oz(j),...
