@@ -24,7 +24,7 @@ phi1_ang = zeros(lenOz, len);
 phi0 = zeros(1, len);% rand(1, len);
 phi1 = zeros(1, len);% rand(1, len);
 
-err = .0050  ; %error in calculated phis
+err = 50  ; %error in calculated phis
 
 max_iter = 3e03; %break while loop after max_iter iterations 
 iter = 0; %iteration count
